@@ -1,0 +1,365 @@
+function init_salesCustomersMap() {
+
+    geocoder = new L.Control.Geocoder.Nominatim();
+
+    var a = true;
+    var LayerMarker;
+    var bol = true;
+    var tempD1;
+    var tempD2;
+    var info = L.control();
+    var RegViewValue = 'a';
+    $("#casablanca").click(function() {
+        RegViewValue = 'CasaBlanca';
+        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
+        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
+        $("#vgms").text('Totale des ventes par GMS - CasaBlanca');
+
+    });
+    $("#fes").click(function() {
+        RegViewValue = 'Fes';
+        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
+        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
+        $("#vgms").text('Totale des ventes par GMS - Fes');
+
+    });
+    $("#tanger").click(function() {
+        RegViewValue = 'Tanger';
+        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
+        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
+        $("#vgms").text('Totale des ventes par GMS - Tanger');
+
+    });
+    $("#Marrakech").click(function() {
+        RegViewValue = 'Marrackech';
+        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
+        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
+
+        $("#vgms").text('Totale des ventes par GMS - Marrackech');
+
+    });
+    $("#meknes").click(function() {
+        RegViewValue = 'Meknes';
+        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
+        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
+        $("#vgms").text('Totale des ventes par GMS - Meknes');
+
+    });
+    $("#rabat").click(function() {
+        RegViewValue = 'Rabat';
+        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
+        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
+        $("#vgms").text('Totale des ventes par GMS - Rabat');
+
+    });
+    $("#vis_gen").click(function() {
+        RegViewValue = 'a';
+        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
+        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
+        $("#vgms").text('Totale des ventes par GMS (Maroc)');
+
+    });
+    if ($('#salesCustmersMapContainer').length) {
+
+
+
+
+        function buildMap() {
+            document.getElementById('salesCustmersMapContainer').innerHTML = "<div id='map' style='width: 100%; height: 100%;'></div>";
+            var mymap = L.map('map').setView([33.589886, -7.603869], 8);
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwcGF0aHphYiIsImEiOiJjamlkNHU4eGEwNGsyM3BsaW1zMHN0dDhtIn0.O6cKzkUUydISZX7bvXOA9A', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 18,
+                id: 'mapbox.streets',
+                accessToken: 'pk.eyJ1IjoibWFwcGF0aHphYiIsImEiOiJjamlkNHU4eGEwNGsyM3BsaW1zMHN0dDhtIn0.O6cKzkUUydISZX7bvXOA9A'
+            }).addTo(mymap);
+            return mymap;
+
+
+        }
+
+        function GrabDrawGraphMap(c1, c2, c3, d1, d2, c4) {
+
+
+            $.when(salesAdress(c1, d1, d2, c4),
+                CompanySale(c2, d1, d2, c4),
+                salesCompanyName(c3, d1, d2, c4)).done(function() {
+                mymap = buildMap();
+
+                info.onAdd = function(mymap) {
+                    this._div = L.DomUtil.create('div', 'infoMapSales');
+
+                    return this._div;
+                };
+
+                function GraphDrawer() {
+
+                    var data1 = [],
+                        data2 = [];
+                    objsalesAdress.forEach(function(el, indx) {
+                        data2.push(el);
+                        data1.push(parseFloat(objCompanySale[indx]));
+                        /*var data1 = [20, 14, 23];
+                        var data2 = ['giraffes', 'orangutans', 'monkeys'];*/
+                    });
+                    //setTimeout(function() {
+
+                    $('.infoMapSales').attr('id', 'SC');
+
+                    var data = [{
+                        type: 'bar',
+                        x: data1,
+                        y: data2,
+                        orientation: 'h'
+                    }];
+                    //('thus data :');
+                    //(data);
+                    Plotly.react('SC', data, {
+                        paper_bgcolor: 'rgba(0,0,0,0)',
+                        plot_bgcolor: 'rgba(0,0,0,0)',
+
+                        width: 400,
+                        height: 200,
+                        margin: {
+                            l: 200,
+                            r: 0,
+                            b: 30,
+                            t: 40,
+                            pad: 4
+                        },
+
+                    }, {
+                        displayModeBar: true
+                    });
+
+                }
+
+                info.addTo(mymap);
+                var JsonDataArray = [];
+                var JsonData = {
+                    "type": "Feature",
+                    "properties": {
+                        "name": null,
+                        "Ventes": null
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": null
+                    }
+                };
+
+                JsonDataArray = [];
+
+                //mymap=buildMap();
+                var datax = [];
+                var datay = [];
+                objsalesAdress.forEach(function(el, indx) {
+                    geocoder.geocode(el, function(results) {
+
+
+                        JsonData['properties']['name'] = objCompanyName[indx];
+
+                        JsonData['properties']['Ventes'] = objCompanySale[indx];
+                        if (typeof results[0] != 'undefined') {
+                            JsonData['geometry']['coordinates'] = [results[0].center.lat, results[0].center.lng];
+                        }
+
+                        JsonDataArray.push(JsonData);
+                        console.log("JsonDataArray");
+                        console.log(JsonDataArray);
+
+                        if (JsonData['geometry']['coordinates'] != null) L.circleMarker(JsonData['geometry']['coordinates'], {
+                                color: "red",
+                                fillColor: '#f03',
+                                fillOpacity: 0.5,
+                                radius: (JsonData['properties']['Ventes']) * 0.01
+                            })
+                            .bindPopup(el + "</br>" + "</br>" + parseFloat(JsonData['properties']['Ventes']) + " MAD")
+                            .addTo(mymap);
+
+
+
+
+                        //L.marker(JsonData['geometry']['coordinates']).addTo(mymap);
+
+                    }); //geocode   
+
+                }); //getting the elements of an objectArray
+
+
+                //mymap.remove();
+                GraphDrawer();
+                //(JsonDataArray);
+            }); //This Function Calls another function To get data from a php file .
+        } //END fUNCTION GRAB&Draw
+        var MapConfig = function() {
+            if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
+            else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
+        }
+
+
+        //Date Variation partition :
+        function GrabDrawGraphMap2(c1, c2, c3, d1, d2, c4) {
+            var mymap2 = buildMap()
+            info.onAdd = function(mymap2) {
+                this._div = L.DomUtil.create('div', 'infoMapSales');
+
+                return this._div;
+            };
+            info.addTo(mymap2);
+            a = false;
+
+            //LayerMarker.clearLayers();
+            $.when(salesAdress('City', d1, d2, c4),
+                CompanySale('SaleAmount', d1, d2, c4),
+                salesCompanyName('CompanyName', d1, d2, c4)).done(function() {
+                var data1 = [],
+                    data2 = [];
+                objsalesAdress.forEach(function(el, indx) {
+                    data2.push(el);
+                    data1.push(parseFloat(objCompanySale[indx]));
+
+                });
+
+                $('.infoMapSales').attr('id', 'SC');
+                var data = [{
+                    type: 'bar',
+                    x: data1,
+                    y: data2,
+                    orientation: 'h'
+                }];
+                //('thus data :');
+                //(data);
+                Plotly.react('SC', data, {
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)',
+                    width: 400,
+                    height: 200,
+                    margin: {
+                        l: 200,
+                        r: 0,
+                        b: 30,
+                        t: 0,
+                        pad: 4
+                    },
+                }, {
+                    displayModeBar: true
+                });
+                var JsonDataArray2 = [];
+                var JsonData2 = {
+                    "type": "Feature",
+                    "properties": {
+                        "name": null,
+                        "Ventes": null
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": null
+                    }
+                };
+
+                //(JsonData2);
+
+                //mymap.removeLayer(LayerMarker);
+                objsalesAdress.forEach(function(el, indx) {
+                    geocoder.geocode(el, function(results) {
+
+                        JsonData2['properties']['name'] = objCompanyName[indx];
+                        JsonData2['properties']['Ventes'] = objCompanySale[indx];
+                        if (typeof results[0] != 'undefined') JsonData2['geometry']['coordinates'] = [results[0].center.lat, results[0].center.lng];
+
+
+
+
+                        JsonDataArray2.push(JsonData2);
+                        if (JsonData2['geometry']['coordinates'] != null) {
+                            L.circleMarker(JsonData2['geometry']['coordinates'], {
+                                    color: "red",
+                                    fillColor: '#f03',
+                                    fillOpacity: 0.5,
+                                    radius: (JsonData2['properties']['Ventes']) * 0.01
+                                })
+                                .bindPopup(el + "</br>" + parseFloat(JsonData2['properties']['Ventes']) + " MAD")
+                                .addTo(mymap2);
+                        }
+
+                        //L.marker(JsonData['geometry']['coordinates']).addTo(mymap);
+
+
+                    });
+                });
+                //('Upadddate date :::');
+                //(JsonDataArray2);
+            });
+
+
+        }
+
+        $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+
+
+            bol = false;
+            tempD1 = picker.startDate.format('YYYY-MM-DD');
+            tempD2 = picker.endDate.format('YYYY-MM-DD');
+            GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
+
+
+
+        }); //This Function make sure to send the new Date to the function that calls another function that calls a php file 
+
+        function salesAdress(Adrss, beginDateRevenu, endDateRevenu, RegV) {
+
+            return $.post("http://localhost/gentelella-master/production/CustomersSalesMap.php", {
+                totalSales: Adrss,
+                beginDate: beginDateRevenu,
+                endDate: endDateRevenu,
+                RegionView: RegV
+            }, function(data) {
+                objsalesAdress = $.parseJSON(data);
+                //('Cities');
+                //(objsalesAdress);
+            });
+        }
+
+        function salesCompanyName(CmpName, beginDateRevenu, endDateRevenu, RegV) {
+
+            return $.post("http://localhost/gentelella-master/production/CustomersSalesMap.php", {
+                totalSales: CmpName,
+                beginDate: beginDateRevenu,
+                endDate: endDateRevenu,
+                RegionView: RegV
+            }, function(data) {
+                objCompanyName = $.parseJSON(data);
+                //(objCompanyName);
+            });
+        }
+
+        function CompanySale(CmpSale, beginDateRevenu, endDateRevenu, RegV) {
+
+            return $.post("http://localhost/gentelella-master/production/CustomersSalesMap.php", {
+                totalSales: CmpSale,
+                beginDate: beginDateRevenu,
+                endDate: endDateRevenu,
+                RegionView: RegV
+            }, function(data) {
+                objCompanySale = $.parseJSON(data);
+                //(objCompanySale);
+            });
+        }
+
+
+
+        var MapResize;
+        $(window).on("resize", function() {
+            /*E-Chart Resize*/
+            clearTimeout(MapResize);
+            MapResize = setTimeout(MapConfig, 200);
+        }).resize();
+        /*****Resize function end*****/
+
+        /*****Function Call start*****/
+
+        MapConfig();
+    } //end if make sure it's loaded befor doing anything
+
+} //End sakesCusomersMap                                                        
