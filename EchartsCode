@@ -1,0 +1,209 @@
+function init_salesProducts() {
+    var bol = true;
+    var PieSales = echarts.init(document.getElementById('chart_plot_SalesByProducts'));
+    var tempD1;
+    var tempD2;
+    var testdate = '1996-07-31';
+    var RegViewValue = 'a';
+    $("#casablanca").click(function() {
+        RegViewValue = 'CasaBlanca';
+        if (bol) dataGraberDrawer('totalSalesByProd', 'ProductName', '1996-07-16', '1996-07-31', RegViewValue);
+        else dataGraberDrawer('totalSalesByProd', 'ProductName', tempD1, tempD2, RegViewValue);
+        $("#vpp").text('Ventes par produits - CasaBlanca');
+
+    });
+    $("#fes").click(function() {
+        RegViewValue = 'Fes';
+        if (bol) dataGraberDrawer('totalSalesByProd', 'ProductName', '1996-07-16', '1996-07-31', RegViewValue);
+        else dataGraberDrawer('totalSalesByProd', 'ProductName', tempD1, tempD2, RegViewValue);
+        $("#vpp").text('Ventes par produits - Fes');
+
+    });
+    $("#tanger").click(function() {
+        RegViewValue = 'Tanger';
+        if (bol) dataGraberDrawer('totalSalesByProd', 'ProductName', '1996-07-16', '1996-07-31', RegViewValue);
+        else dataGraberDrawer('totalSalesByProd', 'ProductName', tempD1, tempD2, RegViewValue);
+        $("#vpp").text('Ventes par produits - Tanger');
+
+    });
+    $("#Marrakech").click(function() {
+        RegViewValue = 'Marrackech';
+        if (bol) dataGraberDrawer('totalSalesByProd', 'ProductName', '1996-07-16', '1996-07-31', RegViewValue);
+        else dataGraberDrawer('totalSalesByProd', 'ProductName', tempD1, tempD2, RegViewValue);
+
+        $("#vpp").text('Ventes par produits - Marrackech');
+
+    });
+    $("#meknes").click(function() {
+        RegViewValue = 'Meknes';
+        if (bol) dataGraberDrawer('totalSalesByProd', 'ProductName', '1996-07-16', '1996-07-31', RegViewValue);
+        else dataGraberDrawer('totalSalesByProd', 'ProductName', tempD1, tempD2, RegViewValue);
+        $("#vpp").text('Ventes par produits - Meknes');
+
+    });
+    $("#rabat").click(function() {
+        RegViewValue = 'Rabat';
+        if (bol) dataGraberDrawer('totalSalesByProd', 'ProductName', '1996-07-16', '1996-07-31', RegViewValue);
+        else dataGraberDrawer('totalSalesByProd', 'ProductName', tempD1, tempD2, RegViewValue);
+        $("#vpp").text('Ventes par produits - Rabat');
+
+    });
+    $("#vis_gen").click(function() {
+        RegViewValue = 'a';
+        if (bol) dataGraberDrawer('totalSalesByProd', 'ProductName', '1996-07-16', '1996-07-31', RegViewValue);
+        else dataGraberDrawer('totalSalesByProd', 'ProductName', tempD1, tempD2, RegViewValue);
+        $("#vpp").text('Ventes par produits');
+
+    });
+    if ($('#chart_plot_SalesByProducts').length) {
+        function dataGraberDrawer(c1, c2, date1, date2, c3) {
+            $.when(salesTotalByProdcut(c1, date1, date2, c3), ProdcutNames(c2, date1, date2, c3)).done(function() {
+                //PreparingData
+                var data = [];
+                var ShellFormat = {
+                    value: null,
+                    name: null
+                };;
+                objsalesByProd.forEach(function(element, index) {
+                    ShellFormat = {
+                        value: element,
+                        name: objProducNames[index]
+                    };
+                    data.push(ShellFormat);
+
+                });
+                //('data' + data);
+
+                console.log(objProducNames);
+                option = null;
+                option = {
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{b} : </br>{c}</br>({d}%)"
+                    },
+                    legend: {
+                        type: 'scroll',
+                        orient: 'horizontal',
+                        top: 0,
+
+
+                        data: objProducNames
+                    },
+                    textStyle: {
+                        fontSize: '9',
+                        fontWeight: 'bolder'
+                    },
+                    toolbox: {
+                        show: false,
+                        feature: {
+                            mark: {
+                                show: true
+                            },
+                            dataView: {
+                                show: true,
+                                readOnly: false
+                            },
+                            magicType: {
+                                show: true,
+                                type: ['pie', 'funnel']
+                            },
+                            restore: {
+                                show: true
+                            },
+                            saveAsImage: {
+                                show: true
+                            }
+                        }
+                    },
+                    calculable: true,
+                    series: [{
+                        radius: [0, '80%'],
+                        center: ['50%', '52%'],
+                        // name:'面积模式',
+                        type: 'pie',
+                        //roseType : 'area',
+                        data: data,
+                        label: {
+                            normal: {
+                                show: true,
+                                textStyle: {
+                                    fontSize: '9',
+                                    //fontWeight: 'bold'
+                                },
+                                formatter: '{b}\n({d}%)',
+                                position: 'outer'
+                            },
+                            emphasis: {
+                                show: true,
+                                textStyle: {
+                                    fontSize: '20',
+                                    fontWeight: 'bold'
+                                }
+                            }
+                        }
+                    }],
+                }; //OPTION END
+                if (option && typeof option === "object") {
+                    PieSales.setOption(option, true);
+                }
+                PieSales.resize();
+            }); //POST CALL
+        } //End DataGrabber
+        var echartsConfig = function() {
+            if (bol) dataGraberDrawer('totalSalesByProd', 'ProductName', '1996-07-16', '1996-07-31', RegViewValue);
+            else dataGraberDrawer('totalSalesByProd', 'ProductName', tempD1, tempD2, RegViewValue);
+            //Calendar Action bEGINS :
+
+            $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+                //console.log('launched data range function ,, so wtf happened ');
+
+                bol = false;
+                tempD1 = picker.startDate.format('YYYY-MM-DD');
+                tempD2 = picker.endDate.format('YYYY-MM-DD');
+                dataGraberDrawer('totalSalesByProd', 'ProductName', tempD1, tempD2, RegViewValue);
+            }); //reportRange
+        }
+
+
+
+        function salesTotalByProdcut(totalSales, beginDateRevenu, endDateRevenu, RegViewValue) {
+
+            return $.post("http://localhost/gentelella-master/production/SalesByprod.php", {
+                totalSales: totalSales,
+                beginDate: beginDateRevenu,
+                endDate: endDateRevenu,
+                RegionView: RegViewValue
+            }, function(data) {
+                objsalesByProd = $.parseJSON(data);
+                //(objsalesByProd);
+            });
+        }
+
+        function ProdcutNames(totalSales, beginDateRevenu, endDateRevenu, RegViewValue) {
+
+            return $.post("http://localhost/gentelella-master/production/SalesByprod.php", {
+                totalSales: totalSales,
+                beginDate: beginDateRevenu,
+                endDate: endDateRevenu,
+                RegionView: RegViewValue
+            }, function(data) {
+                objProducNames = $.parseJSON(data);
+                //(objProducNames);
+            });
+        }
+
+        var echartResize;
+
+        $(window).on("resize", function(ev) {
+
+            clearTimeout(echartResize);
+            echartResize = setTimeout(echartsConfig, 200);
+        }).resize();
+        echartsConfig();
+        console.log(bol);
+
+    } //Loaded or not , IF
+} //End Salesproducts
+
+//Begin SalesCustomersMap
+//Begin SalesCustomersMap
