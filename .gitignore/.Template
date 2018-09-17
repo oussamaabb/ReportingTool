@@ -1,365 +1,487 @@
-function init_salesCustomersMap() {
-
-    geocoder = new L.Control.Geocoder.Nominatim();
-
-    var a = true;
-    var LayerMarker;
-    var bol = true;
-    var tempD1;
-    var tempD2;
-    var info = L.control();
-    var RegViewValue = 'a';
-    $("#casablanca").click(function() {
-        RegViewValue = 'CasaBlanca';
-        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
-        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
-        $("#vgms").text('Totale des ventes par GMS - CasaBlanca');
-
-    });
-    $("#fes").click(function() {
-        RegViewValue = 'Fes';
-        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
-        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
-        $("#vgms").text('Totale des ventes par GMS - Fes');
-
-    });
-    $("#tanger").click(function() {
-        RegViewValue = 'Tanger';
-        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
-        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
-        $("#vgms").text('Totale des ventes par GMS - Tanger');
-
-    });
-    $("#Marrakech").click(function() {
-        RegViewValue = 'Marrackech';
-        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
-        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
-
-        $("#vgms").text('Totale des ventes par GMS - Marrackech');
-
-    });
-    $("#meknes").click(function() {
-        RegViewValue = 'Meknes';
-        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
-        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
-        $("#vgms").text('Totale des ventes par GMS - Meknes');
-
-    });
-    $("#rabat").click(function() {
-        RegViewValue = 'Rabat';
-        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
-        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
-        $("#vgms").text('Totale des ventes par GMS - Rabat');
-
-    });
-    $("#vis_gen").click(function() {
-        RegViewValue = 'a';
-        if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
-        else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
-        $("#vgms").text('Totale des ventes par GMS (Maroc)');
-
-    });
-    if ($('#salesCustmersMapContainer').length) {
-
-
-
-
-        function buildMap() {
-            document.getElementById('salesCustmersMapContainer').innerHTML = "<div id='map' style='width: 100%; height: 100%;'></div>";
-            var mymap = L.map('map').setView([33.589886, -7.603869], 8);
-            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwcGF0aHphYiIsImEiOiJjamlkNHU4eGEwNGsyM3BsaW1zMHN0dDhtIn0.O6cKzkUUydISZX7bvXOA9A', {
-                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-                maxZoom: 18,
-                id: 'mapbox.streets',
-                accessToken: 'pk.eyJ1IjoibWFwcGF0aHphYiIsImEiOiJjamlkNHU4eGEwNGsyM3BsaW1zMHN0dDhtIn0.O6cKzkUUydISZX7bvXOA9A'
-            }).addTo(mymap);
-            return mymap;
-
-
-        }
-
-        function GrabDrawGraphMap(c1, c2, c3, d1, d2, c4) {
-
-
-            $.when(salesAdress(c1, d1, d2, c4),
-                CompanySale(c2, d1, d2, c4),
-                salesCompanyName(c3, d1, d2, c4)).done(function() {
-                mymap = buildMap();
-
-                info.onAdd = function(mymap) {
-                    this._div = L.DomUtil.create('div', 'infoMapSales');
-
-                    return this._div;
-                };
-
-                function GraphDrawer() {
-
-                    var data1 = [],
-                        data2 = [];
-                    objsalesAdress.forEach(function(el, indx) {
-                        data2.push(el);
-                        data1.push(parseFloat(objCompanySale[indx]));
-                        /*var data1 = [20, 14, 23];
-                        var data2 = ['giraffes', 'orangutans', 'monkeys'];*/
-                    });
-                    //setTimeout(function() {
-
-                    $('.infoMapSales').attr('id', 'SC');
-
-                    var data = [{
-                        type: 'bar',
-                        x: data1,
-                        y: data2,
-                        orientation: 'h'
-                    }];
-                    //('thus data :');
-                    //(data);
-                    Plotly.react('SC', data, {
-                        paper_bgcolor: 'rgba(0,0,0,0)',
-                        plot_bgcolor: 'rgba(0,0,0,0)',
-
-                        width: 400,
-                        height: 200,
-                        margin: {
-                            l: 200,
-                            r: 0,
-                            b: 30,
-                            t: 40,
-                            pad: 4
-                        },
-
-                    }, {
-                        displayModeBar: true
-                    });
-
-                }
-
-                info.addTo(mymap);
-                var JsonDataArray = [];
-                var JsonData = {
-                    "type": "Feature",
-                    "properties": {
-                        "name": null,
-                        "Ventes": null
-                    },
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": null
-                    }
-                };
-
-                JsonDataArray = [];
-
-                //mymap=buildMap();
-                var datax = [];
-                var datay = [];
-                objsalesAdress.forEach(function(el, indx) {
-                    geocoder.geocode(el, function(results) {
-
-
-                        JsonData['properties']['name'] = objCompanyName[indx];
-
-                        JsonData['properties']['Ventes'] = objCompanySale[indx];
-                        if (typeof results[0] != 'undefined') {
-                            JsonData['geometry']['coordinates'] = [results[0].center.lat, results[0].center.lng];
-                        }
-
-                        JsonDataArray.push(JsonData);
-                        console.log("JsonDataArray");
-                        console.log(JsonDataArray);
-
-                        if (JsonData['geometry']['coordinates'] != null) L.circleMarker(JsonData['geometry']['coordinates'], {
-                                color: "red",
-                                fillColor: '#f03',
-                                fillOpacity: 0.5,
-                                radius: (JsonData['properties']['Ventes']) * 0.01
-                            })
-                            .bindPopup(el + "</br>" + "</br>" + parseFloat(JsonData['properties']['Ventes']) + " MAD")
-                            .addTo(mymap);
-
-
-
-
-                        //L.marker(JsonData['geometry']['coordinates']).addTo(mymap);
-
-                    }); //geocode   
-
-                }); //getting the elements of an objectArray
-
-
-                //mymap.remove();
-                GraphDrawer();
-                //(JsonDataArray);
-            }); //This Function Calls another function To get data from a php file .
-        } //END fUNCTION GRAB&Draw
-        var MapConfig = function() {
-            if (bol) GrabDrawGraphMap('City', 'SaleAmount', 'CompanyName', '1996-07-16', '1996-07-31', RegViewValue);
-            else GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
-        }
-
-
-        //Date Variation partition :
-        function GrabDrawGraphMap2(c1, c2, c3, d1, d2, c4) {
-            var mymap2 = buildMap()
-            info.onAdd = function(mymap2) {
-                this._div = L.DomUtil.create('div', 'infoMapSales');
-
-                return this._div;
-            };
-            info.addTo(mymap2);
-            a = false;
-
-            //LayerMarker.clearLayers();
-            $.when(salesAdress('City', d1, d2, c4),
-                CompanySale('SaleAmount', d1, d2, c4),
-                salesCompanyName('CompanyName', d1, d2, c4)).done(function() {
-                var data1 = [],
-                    data2 = [];
-                objsalesAdress.forEach(function(el, indx) {
-                    data2.push(el);
-                    data1.push(parseFloat(objCompanySale[indx]));
-
-                });
-
-                $('.infoMapSales').attr('id', 'SC');
-                var data = [{
-                    type: 'bar',
-                    x: data1,
-                    y: data2,
-                    orientation: 'h'
-                }];
-                //('thus data :');
-                //(data);
-                Plotly.react('SC', data, {
-                    paper_bgcolor: 'rgba(0,0,0,0)',
-                    plot_bgcolor: 'rgba(0,0,0,0)',
-                    width: 400,
-                    height: 200,
-                    margin: {
-                        l: 200,
-                        r: 0,
-                        b: 30,
-                        t: 0,
-                        pad: 4
-                    },
-                }, {
-                    displayModeBar: true
-                });
-                var JsonDataArray2 = [];
-                var JsonData2 = {
-                    "type": "Feature",
-                    "properties": {
-                        "name": null,
-                        "Ventes": null
-                    },
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": null
-                    }
-                };
-
-                //(JsonData2);
-
-                //mymap.removeLayer(LayerMarker);
-                objsalesAdress.forEach(function(el, indx) {
-                    geocoder.geocode(el, function(results) {
-
-                        JsonData2['properties']['name'] = objCompanyName[indx];
-                        JsonData2['properties']['Ventes'] = objCompanySale[indx];
-                        if (typeof results[0] != 'undefined') JsonData2['geometry']['coordinates'] = [results[0].center.lat, results[0].center.lng];
-
-
-
-
-                        JsonDataArray2.push(JsonData2);
-                        if (JsonData2['geometry']['coordinates'] != null) {
-                            L.circleMarker(JsonData2['geometry']['coordinates'], {
-                                    color: "red",
-                                    fillColor: '#f03',
-                                    fillOpacity: 0.5,
-                                    radius: (JsonData2['properties']['Ventes']) * 0.01
-                                })
-                                .bindPopup(el + "</br>" + parseFloat(JsonData2['properties']['Ventes']) + " MAD")
-                                .addTo(mymap2);
-                        }
-
-                        //L.marker(JsonData['geometry']['coordinates']).addTo(mymap);
-
-
-                    });
-                });
-                //('Upadddate date :::');
-                //(JsonDataArray2);
-            });
-
-
-        }
-
-        $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
-
-
-            bol = false;
-            tempD1 = picker.startDate.format('YYYY-MM-DD');
-            tempD2 = picker.endDate.format('YYYY-MM-DD');
-            GrabDrawGraphMap2('City', 'SaleAmount', 'CompanyName', tempD1, tempD2, RegViewValue);
-
-
-
-        }); //This Function make sure to send the new Date to the function that calls another function that calls a php file 
-
-        function salesAdress(Adrss, beginDateRevenu, endDateRevenu, RegV) {
-
-            return $.post("http://localhost/gentelella-master/production/CustomersSalesMap.php", {
-                totalSales: Adrss,
-                beginDate: beginDateRevenu,
-                endDate: endDateRevenu,
-                RegionView: RegV
-            }, function(data) {
-                objsalesAdress = $.parseJSON(data);
-                //('Cities');
-                //(objsalesAdress);
-            });
-        }
-
-        function salesCompanyName(CmpName, beginDateRevenu, endDateRevenu, RegV) {
-
-            return $.post("http://localhost/gentelella-master/production/CustomersSalesMap.php", {
-                totalSales: CmpName,
-                beginDate: beginDateRevenu,
-                endDate: endDateRevenu,
-                RegionView: RegV
-            }, function(data) {
-                objCompanyName = $.parseJSON(data);
-                //(objCompanyName);
-            });
-        }
-
-        function CompanySale(CmpSale, beginDateRevenu, endDateRevenu, RegV) {
-
-            return $.post("http://localhost/gentelella-master/production/CustomersSalesMap.php", {
-                totalSales: CmpSale,
-                beginDate: beginDateRevenu,
-                endDate: endDateRevenu,
-                RegionView: RegV
-            }, function(data) {
-                objCompanySale = $.parseJSON(data);
-                //(objCompanySale);
-            });
-        }
-
-
-
-        var MapResize;
-        $(window).on("resize", function() {
-            /*E-Chart Resize*/
-            clearTimeout(MapResize);
-            MapResize = setTimeout(MapConfig, 200);
-        }).resize();
-        /*****Resize function end*****/
-
-        /*****Function Call start*****/
-
-        MapConfig();
-    } //end if make sure it's loaded befor doing anything
-
-} //End sakesCusomersMap                                                        
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc.    -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="images/Les.ico" type="image/ico" />
+
+    <title>Lesieur Dashboard | </title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+	
+    <!-- bootstrap-progressbar -->
+    <link href="../vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- JQVMap -->
+    <link href="../vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>
+    <!-- bootstrap-daterangepicker -->
+    <link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+ <!-- Leaflet -->
+    <link href="../vendors/leaflet/dist/leaflet.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.css" rel="stylesheet">
+    <link href="../build/css/style.css" rel="stylesheet">
+  </head>
+
+  <body class="nav-md">
+    <div class="container body">
+      <div class="main_container">
+        <div class="col-md-3 left_col">
+          <div class="left_col scroll-view">
+            <div class="navbar nav_title" style="border: 0;">
+              <a href="index.html" class="site_title"> <span>Lesieur Dashboard</span></a>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <!-- menu profile quick info -->
+          
+            <!-- /menu profile quick info -->
+
+            <br />
+
+            <!-- sidebar menu -->
+            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+              <div class="menu_section">
+                
+                <ul class="nav side-menu">
+                  <li><a id="vis_gen"><i class="fa fa-home" ></i> vision générale </a>
+                    <ul class="nav child_menu">
+                      
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-map-marker"></i> Regions <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a id="casablanca">casablanca</a></li>
+                      <li><a id="fes">Fès</a></li>
+                      <li><a id="tanger">Tanger</a></li>
+                      <li><a id="Marrakech">Marrakech</a></li>
+                      <li><a id="meknes">Meknes</a></li>
+                      <li><a id="rabat">Rabat</a></li>
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-building"></i> Canal de vente <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a id="GMS">GMS</a></li>
+                      <li><a id="Gros">Gros</a></li>
+                      <li><a id="Demi">Demi Gros</a></li>
+                      <li><a id="Detaillant">détaillant </a></li>  
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-cubes"></i> Produits <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+
+                        <li><a><i class="fa fa-cube"></i> HT <span class="fa fa-chevron-down"></span></a>
+                          <ul class="nav child_menu">
+                            <li><a id="Lesieur_3G">Lesieur 3G</a></li>
+                            <li><a id="Cristal">Cristal</a></li>
+                            <li><a id="Huilor">Huilor</a></li>
+                            <li><a id="Lesieur_Friture">Lesieur Friture</a></li>
+                            <li><a id="Oleor">Oleor</a></li>
+                            <li><a id="Huilor_Duo">Huilor Duo</a></li>
+                            <li><a id="GRAINE_OR">Graine d'or</a></li>
+                            
+                         </ul>
+                  </li>
+                      <li><a><i class="fa fa-cube"></i> HO <span class="fa fa-chevron-down"></span></a>
+                          <ul class="nav child_menu">
+                            <li><a id="AL_Horra">AL Horra</a></li>
+                            <li><a id="Jawhara_Olive">Jawhara Olive</a></li>
+                            <li><a id="MABROUKA">MABROUKA</a></li>
+                         </ul>
+                  </li>
+
+                        <li><a><i class="fa fa-cube"></i> SV <span class="fa fa-chevron-down"></span></a>
+                          <ul class="nav child_menu">
+                            <li><a id="Taous">Taous</a></li>
+                            <li><a id="TNV">Taous Nlle variante</a></li>
+                            <li><a id="KEF">El Kef</a></li>
+                            <li><a id="KEF_PATE">El Kef Pate</a></li>
+                            <li><a id="Kef_poudre">El Kef Poudre</a></li>
+                            <li><a id="Kef_Liquide">El Kef Liquide</a></li>
+                            <li><a id="Taous_Liquide">Taous Liquide</a></li>
+                             <li><a id="Taous_Gel">Taous Gel</a></li>
+                            
+                         </ul>
+                  </li>
+
+                  <li><a><i class="fa fa-cube"></i> SH <span class="fa fa-chevron-down"></span></a>
+                          <ul class="nav child_menu">
+                            <li><a id="Taous_Shampo">Taous Shampo</a></li>
+                         </ul>
+                  </li>
+
+                        <li><a><i class="fa fa-cube"></i> CO <span class="fa fa-chevron-down"></span></a>
+                          <ul class="nav child_menu">
+                            <li><a id="Mayonnaise">Mayonnaise</a></li>
+                            <li><a id="Ketchup">Ketchup</a></li>
+                            <li><a id="Moutarde">Moutarde</a></li>
+                            
+                         </ul>
+                  </li>
+
+                    </ul>
+                  </li>
+                  
+              
+                </ul>
+              </div>
+              
+
+            </div>
+            <!-- /sidebar menu -->
+
+           
+          </div>
+        </div>
+
+        <!-- top navigation -->
+       
+        <!-- /top navigation -->
+
+        <!-- page content -->
+        <div class="right_col" role="main">
+          <!-- top tiles -->
+          <div class="row tile_count">
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-money"></i> ventes</span>
+              <div class="count" id='count1'></div>
+              <span class="count_bottom" id ='count1UpDown'><i class="fa fa-sort-asc"id='up1'></i><i class="green" id='countColor1'></i></span>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-clock-o"></i> Objectif de vente </span>
+              <div class="count" id='count2'>123.50</div>
+              <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">le volume</button>
+
+<!-- Modal -->
+<div class="modal pop" id="exampleModal" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <input type="text" class="form-control" id="VolumeInputText"  placeholder="Volume">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" id="VolumeInputBtn" >Sauvegarder</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modal -->
+              <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>3% </i></span>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-user"></i> nombre des clients</span>
+              <div class="count green" id='count3'>2,500</div>
+              <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>5% </i>du mois dernier</span>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-user"></i> taux d'activation</span>
+              <div class="count"id='count4'>70%</div>
+              <span class="count_bottom"><i class="green"><i class="fa fa-sort-desc"></i>12% </i>du mois dernier</span>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-user"></i> pourcentage de vendeurs (objectif>50%) </span>
+              <div class="count"id='count5'>63%</div>
+              <span class="count_bottom"><i class="red"><i class="fa fa-sort-asc"></i>20% </i>du mois dernier</span>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-user"></i>perte de profit (clients non activés)</span>
+              <div class="count"id='count6'>678</div>
+              <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>8% </i>du mois dernier</span>
+            </div>
+          </div>
+          <!-- /top tiles -->
+          <div class="col-md-12">
+                    <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                      <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                      <span></span> <b class="caret"></b>
+                    </div>
+                  </div>
+<!-- /SalesByRegion -->
+<!-- Extendable Chart -->
+                      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <div class="panel panel-default card-view panel-refresh">
+              <div class="refresh-container">
+                <div class="la-anim-1"></div>
+              </div>
+              <div class="panel-heading">
+                <div class="pull-left">
+                  <h3 class="panel-title txt-dark"id ="vpr">Ventes par Region</h3>
+                </div>
+                <div class="pull-right">
+                  <a href="#" class="pull-left inline-block refresh mr-15">
+                    <i class="zmdi zmdi-replay"></i>
+                  </a>
+                  <a href="#" class="pull-left inline-block full-screen mr-15">
+                    <i class="zmdi zmdi-fullscreen"></i>
+                  </a>
+                 
+                </div>
+                <div class="clearfix"></div>
+              </div>
+              <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                  <div id="chart_plot_01" class="DNAhSWITCH" style="width: 100%;"></div>
+                  
+                </div>
+              </div>
+                        </div>
+                    </div>
+                    <!-- End -->
+          
+          <!-- /SalesByProducts -->
+               <!-- Extendable Chart -->
+                      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <div class="panel panel-default card-view panel-refresh">
+              <div class="refresh-container">
+                <div class="la-anim-1"></div>
+              </div>
+              <div class="panel-heading">
+                <div class="pull-left">
+                  <h3 class="panel-title txt-dark" id ="vpp">Ventes par produits</h3>
+                </div>
+                <div class="pull-right">
+                  <a href="#" class="pull-left inline-block refresh mr-15">
+                    <i class="zmdi zmdi-replay"></i>
+                  </a>
+                  <a href="#" class="pull-left inline-block full-screen mr-15">
+                    <i class="zmdi zmdi-fullscreen"></i>
+                  </a>
+                 
+                </div>
+                <div class="clearfix"></div>
+              </div>
+              <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                  <div id="chart_plot_SalesByProducts" class="DNAhSWITCH" style=" width: 100%;"></div>
+                  
+                </div>
+              </div>
+                        </div>
+                    </div>
+                    <!-- End -->
+            <!-- /SalesByCategorieRegion-->
+             <!-- Extendable Chart -->
+                      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <div class="panel panel-default card-view panel-refresh">
+              <div class="refresh-container">
+                <div class="la-anim-1"></div>
+              </div>
+              <div class="panel-heading">
+                <div class="pull-left">
+                  <h3 class="panel-title txt-dark" id ="vpc">Ventes par Categorie</h3>
+                </div>
+                <div class="pull-right">
+                  <a href="#" class="pull-left inline-block refresh mr-15">
+                    <i class="zmdi zmdi-replay"></i>
+                  </a>
+                  <a href="#" class="pull-left inline-block full-screen mr-15">
+                    <i class="zmdi zmdi-fullscreen"></i>
+                  </a>
+                 
+                </div>
+                <div class="clearfix"></div>
+              </div>
+              <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                  <div id="chart_plot_SalesByCategory" class="DNAhSWITCH" style=" width: 100%;"></div>
+                  
+                </div>
+              </div>
+                        </div>
+                    </div>
+                    <!-- End -->
+            
+          
+ <!-- /SalesCustomersMapByProducts -->
+ <!-- Extendable Chart -->
+                      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <div class="panel panel-default card-view panel-refresh">
+              <div class="refresh-container">
+                <div class="la-anim-1"></div>
+              </div>
+              <div class="panel-heading">
+                <div class="pull-left">
+                  <h3 class="panel-title txt-dark" id="vgms">Totale des ventes par GMS (Maroc)</h3>
+                </div>
+                <div class="pull-right">
+                  <a href="#" class="pull-left inline-block refresh mr-15">
+                    <i class="zmdi zmdi-replay"></i>
+                  </a>
+                  <a href="#" class="pull-left inline-block full-screen mr-15">
+                    <i class="zmdi zmdi-fullscreen"></i>
+                  </a>
+                 
+                </div>
+                <div class="clearfix"></div>
+              </div>
+              <div class="panel-wrapper collapse in">
+                
+                                <div class="panel-body">
+
+                  <div id="salesCustmersMapContainer" class="DNAhSWITCH" style=" width: 100%;"></div>
+                  </div>
+                
+              </div>
+                        </div>
+                    </div>
+                    <!-- End -->
+             
+<!-- /END SalesCustomersMapByProducts -->
+<!-- /SalesAgentsMap-->
+ <!-- Extendable Chart -->
+                      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <div class="panel panel-default card-view panel-refresh">
+              <div class="refresh-container">
+                <div class="la-anim-1"></div>
+              </div>
+              <div class="panel-heading">
+                <div class="pull-left">
+                  <h3 class="panel-title txt-dark" id="sam">ventes par vendeur (Maroc)</h3>
+                </div>
+                <div class="pull-right">
+                  <a href="#" class="pull-left inline-block refresh mr-15">
+                    <i class="zmdi zmdi-replay"></i>
+                  </a>
+                  <a href="#" class="pull-left inline-block full-screen mr-15">
+                    <i class="zmdi zmdi-fullscreen"></i>
+                  </a>
+                 
+                </div>
+                <div class="clearfix"></div>
+              </div>
+              <div class="panel-wrapper collapse in">
+                
+                                <div class="panel-body">
+
+                  <div id="SalesAgentsMap" class="DNAhSWITCH" style=" width: 100%;"></div>
+                  </div>
+                
+              </div>
+                        </div>
+                    </div>
+                    <!-- End -->
+             
+<!-- /END SalesCustomersMapByProducts -->
+
+          <div class="row">
+
+
+
+           
+
+          </div>
+
+
+          <div class="row">
+           
+
+
+            <div class="col-md-8 col-sm-8 col-xs-12">
+
+
+
+              <div class="row">
+
+             
+
+              </div>
+              <div class="row">
+
+
+                <!-- Start to do list -->
+             
+                <!-- End to do list -->
+                
+                <!-- start of weather widget -->
+                
+                <!-- end of weather widget -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+            Lesieur Dashboard by <a href="https://www.linkedin.com/in/oussama-abboudi-896486121/">OssAbb</a>
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="../vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="../vendors/nprogress/nprogress.js"></script>
+    <!-- Chart.js -->
+    <script src="../vendors/Chart.js/dist/Chart.min.js"></script>
+    <!-- gauge.js -->
+    <script src="../vendors/gauge.js/dist/gauge.min.js"></script>
+    <!-- bootstrap-progressbar -->
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- iCheck -->
+    <script src="../vendors/iCheck/icheck.min.js"></script>
+    <!-- Skycons -->
+    <script src="../vendors/skycons/skycons.js"></script>
+    <!-- Flot -->
+    <script src="../vendors/Flot/jquery.flot.js"></script>
+    <script src="../vendors/Flot/jquery.flot.pie.js"></script>
+    <script src="../vendors/Flot/jquery.flot.time.js"></script>
+    <script src="../vendors/Flot/jquery.flot.stack.js"></script>
+    <script src="../vendors/Flot/jquery.flot.resize.js"></script>
+    <!-- Flot plugins -->
+    <script src="../vendors/flot.orderbars/js/jquery.flot.orderBars.js"></script>
+    <script src="../vendors/flot-spline/js/jquery.flot.spline.min.js"></script>
+    <script src="../vendors/flot.curvedlines/curvedLines.js"></script>
+        <!-- ECharts <script src=" https://cdnjs.cloudflare.com/ajax/libs/echarts/4.1.0/echarts-en.min.js"></script> -->
+        <script src="../vendors/echarts/dist/echarts-en.min.js"></script>
+   
+
+    <script src="../vendors/echarts/map/js/world.js"></script>
+      <!-- PlotlyJs-->
+      <script src="../vendors/plotly.js/dist/plotly.min.js"></script>
+    <!-- DateJS -->
+    <script src="../vendors/DateJS/build/date.js"></script>
+    <!-- JQVMap -->
+    <script src="../vendors/jqvmap/dist/jquery.vmap.js"></script>
+    <script src="../vendors/jqvmap/dist/maps/jquery.vmap.world.js"></script>
+    <script src="../vendors/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
+    <!-- bootstrap-daterangepicker -->
+    <script src="../vendors/moment/min/moment.min.js"></script>
+    <script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+      <!-- LeafLet -->
+    <script src="../vendors/leaflet/dist/leaflet.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.js"></script>
+    <script src="../build/js/init.js"></script>
+    <script src="../build/js/owl.carousel.min.js"></script>
+<script src="Control.Geocoder.js"></script>
+	  <script>
+      
+    </script>
+  </body>
+</html>
