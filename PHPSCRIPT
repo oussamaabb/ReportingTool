@@ -1,0 +1,63 @@
+<?php 
+$servername	="localhost:3308";
+$username	="root";
+$password	="mm123456";
+$dbname	="northwind";
+$conn =  new mysqli($servername,$username,$password,$dbname);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+} 
+if (!empty($_POST['price']))
+{
+	$name = $_POST['price'];
+}
+if (!empty($_POST['region']))
+{
+	$region = $_POST['region'];
+}
+if (!empty($_POST['beginDate']))
+{
+	$beginDate = $_POST['beginDate'];
+}
+if (!empty($_POST['endDate']))
+{
+	$endDate = $_POST['endDate'];
+}
+/*if (!empty($_POST['RegionView']))
+{
+    $RegionView = $_POST['RegionView'];
+}*/
+/*$name = 'Country';
+$region = '"USA"';
+$beginDate = '1996-07-16';
+$endDate = '1996-07-31';*/
+//echo $name;
+/*if (strlen($RegionView)>1) $query = "SELECT 
+  kratos.CategoryName,
+  kratos.ShipCountry,
+SUM(kratos.UnitPrice*kratos.Quantity) AS SaleAmount   
+FROM kratos
+WHERE (kratos.ShippedDate Between '$beginDate' AND '$endDate') AND kratos.ShipCountry='$RegionView' GROUP BY kratos.CategoryName;";
+else if (strlen($RegionView)==1) */
+  
+  $query = "SELECT 
+  kratos.CategoryName,
+  kratos.ShipCountry,
+SUM(kratos.UnitPrice*kratos.Quantity) AS SaleAmount   
+FROM kratos
+WHERE (kratos.ShippedDate Between '$beginDate' AND '$endDate') AND kratos.ShipCountry='$region' GROUP BY kratos.CategoryName;";  //This is where I specify what data to query
+//echo $query;
+$result = $conn->query($query);
+$data = array();
+if(!$result) ide($conn->error);
+$rows = $result->num_rows;
+for($j=0;$j<$rows;++$j){
+    $result->data_seek($j);
+    $row = $result->fetch_array(MYSQLI_ASSOC);
+    array_push($data,$row[$name]); 
+}
+
+echo json_encode($data);
+$result->close();
+  $conn->close();
+?>
